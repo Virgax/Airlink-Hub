@@ -1,0 +1,164 @@
+# Airlink Distribution — Database Schema Reference
+# DB: SPN | Última actualización: 2026-03-31
+
+================================================================
+## TABLE: Empleados (DB: SPN)
+================================================================
+Key columns used in Hub/LX system:
+
+| Column              | Type    | Notes                          |
+|---------------------|---------|--------------------------------|
+| Numero              | int     | PK — ID único del empleado     |
+| Codigo              | varchar | Ej: DR0002 — código de empleado|
+| Nombre              | varchar | Primer nombre                  |
+| Apellido1           | varchar | Primer apellido                |
+| Apellido2           | varchar | Segundo apellido               |
+| Apellido3           | varchar | Tercer apellido (si aplica)    |
+| Cedula              | varchar | Cédula dominicana (con guiones)|
+| E_Mail              | varchar | Correo corporativo             |
+| Posicion            | int/varchar | FK → Posiciones            |
+| ID_Departamento     | int     | FK → Departamentos             |
+| Nivel               | int     | Nivel jerárquico               |
+| Supervisor          | varchar/int | Código o ID del supervisor |
+| Estatus             | varchar | Activo/Inactivo                |
+| Foto_imagen         | varchar | Path o nombre de foto          |
+| foto                | image/varbinary | Foto binaria             |
+| Apodo               | varchar | Nombre corto/apodo             |
+| Celular             | varchar |                                |
+| Telefono1           | varchar |                                |
+| Fecha_Ingreso       | date    |                                |
+| Salario_Base        | decimal |                                |
+| Tipo_Empleado       | varchar |                                |
+| Clasificacion       | varchar |                                |
+| ID_Gerencia         | int     | FK → Gerencias                 |
+| ID_Unidad_Organizacional | int |                              |
+
+Full column list:
+Numero_Compania, Numero, Codigo, Nombre, Apellido1, Apellido2, Genero,
+Fecha_Nacimiento, Lugar_Nacimiento, Nacionalidad, Lengua_Materna, Cedula,
+Estado_Civil, pasaporte, Telefono1, Telefono2, Direccion, Fecha_Ingreso,
+Nivel, Clasificacion, Posicion, Salario_Base, Salario_Hora, Cuenta_Bancaria,
+Estatus, Fecha_Estatus, Poncha, Tipo_Empleado, E_Mail, Nombre_emergencia,
+Telefono_Emergencia, Nombre_Doctor, Telefono_Doctor, Direccion_Emergencia,
+Ciudad, Nombre_Usuario, Numero_Solicitud, Nomina_Salario, Descontar_SS,
+Grupo_Trabajo, Numero_Tarjeta, Tipo_asalariado, Numero_Afiliado, Titular,
+foto, Celular, Beeper, Fax, Telefono_Oficina, DiaMes_Nacimiento,
+Compania_Electricidad, Cuenta_Electricidad, Alergias, Tipo_Sangre, Diabetico,
+Dependiente_Insulina, Donante_Activo, Forma_Pago, Region_Zona, Nivel_Salarial,
+Fecha_Nombramiento, Fecha_Cancelacion, Motivo_Cancelacion, Excluir_Pago,
+Comentario, BTC_Cod_Tipo_Cuenta, Codigo_Banco, Turno, Mensaje, no_sdss,
+Acta_nacimiento, Tipo_Salario, Haypoint, Grado, Zona, Provincia, Municipio,
+Barrio, Frecuencia_Pago, Sucursal, Operacion, Nivel_Academico, Ruta,
+Fecha_proxima_evaluacion, Clase_Empleado, Supervisor, Embarazada, Dia_Inferiado,
+BaseRate, cobra_endolares, Salario_Anterior, ID_Departamento, Fecha_Ultimo_Aumento,
+Posicion_Horizontal, Nomina_Vacaciones, Salario_En_Dolares, JobRate, Codigo_Reloj,
+Codigo_Horario, Codigo_Equipo, Paycode, Asumir_ISR, Vacaciones_Fecha_Desde,
+Vacaciones_Fecha_Hasta, Codigo_Motivo_Accion, Apellido3, PS_NOMNUM, AFP, Apodo,
+Incluir_T60, Password, Terminacion_Contrato, ARS, AplicaParaIncentivo,
+AplicaParaSubsidio, Aplicardesctransporte, IdCiudad, IdCompaniaSup, Pago_Neto,
+ID_Direccion, ID_Unidad_Organizacional, Evaluable, ID_Gerencia, E_Mail_Personal,
+Fecha_Ultima_Modificacion, FsArchivo_Id, Foto_imagen, Carrera, Discapacitado,
+Razon_Discapacidad, ID_Perfil, Si_Labora_Tiempo_Parcial, Numero_Transito,
+Modalidad_De_Trabajo, Remuneracion_Otros_Empleadores, CedulaTSS, Referido_Por,
+Codigo_Banco_Indexado, Cuenta_Bancaria_Indexada, Tipo_Cuenta_Bancaria_Indexada
+
+================================================================
+## TABLE: Posiciones (DB: SPN)
+================================================================
+Key columns used in Hub/LX system:
+
+| Column                | Notes                                    |
+|-----------------------|------------------------------------------|
+| Codigo                | PK — código de posición (FK en Empleados.Posicion) |
+| descripcion           | Nombre de la posición                    |
+| Estatus               | Activo/Inactivo                          |
+
+Full column list:
+Codigo, descripcion, Referencia, PermitirIngresoExtra, Ano, MontoEncuesta,
+Formula_SalarioHora, Codigo_Alternativo, Ruta_Documento, UrlVideo, Estatus,
+Intermitente, Formula_Salario_Diario, Posicion_Critica, Dias_Cobertura_Plaza
+
+Join to Empleados:
+  Empleados.Posicion = Posiciones.Codigo
+
+================================================================
+## TABLE: Departamentos (DB: SPN)
+================================================================
+Key columns used in Hub/LX system:
+
+| Column                | Notes                                    |
+|-----------------------|------------------------------------------|
+| ID                    | PK — FK en Empleados.ID_Departamento     |
+| codigo                | Código del departamento                  |
+| descripcion           | Nombre del departamento                  |
+| Codigo_Encargado      | Código del jefe del depto                |
+
+Full column list:
+ID, codigo, descripcion, Codigo_Encargado, AgregarDiasSalarioAdicional,
+Referencia, Departamento_Grupo, Facilidad, RRHH
+
+Join to Empleados:
+  Empleados.ID_Departamento = Departamentos.ID
+
+================================================================
+## STORED PROCEDURES — DB: SPN
+================================================================
+
+SP_Hub_ValidateLogin
+  @EmployeeCode varchar(20)
+  @LastFour     varchar(4)
+  Returns: IsValid, EmployeeCode, EmployeeName, EmployeeEmail,
+           PositionName, DepartmentName, ReportLevel
+  Security: Returns empty strings for all fields if LastFour doesn't match
+
+================================================================
+## DB: AirlinkDR — Hub Session Tables
+================================================================
+
+TABLE: Hub_Sessions
+  SessionID     uniqueidentifier PK
+  EmployeeCode  varchar(20)
+  AgentType     varchar(20)  -- 'CLAUDE' | 'DINO' | 'LX'
+  StartedAt     datetime
+  LastActivity  datetime
+
+TABLE: Hub_Messages
+  MessageID   int PK IDENTITY
+  SessionID   uniqueidentifier FK → Hub_Sessions
+  Role        varchar(20)  -- 'user' | 'claude' | 'dino'
+  Content     nvarchar(MAX)
+  CreatedAt   datetime
+
+================================================================
+## STORED PROCEDURES — DB: AirlinkDR
+================================================================
+
+SP_Hub_NewSession
+  @EmployeeCode varchar(20)
+  @AgentType    varchar(20)
+  Returns: SessionID (uniqueidentifier as varchar)
+
+SP_Hub_SaveMessage
+  @SessionID  uniqueidentifier
+  @Role       varchar(20)
+  @Content    nvarchar(MAX)
+  Returns: MessageID
+
+SP_Hub_LoadHistory
+  @SessionID  uniqueidentifier
+  @Limit      int = 40
+  Returns: MessageID, Role, Content, CreatedAt (ASC order)
+
+================================================================
+## PERMISSIONS
+================================================================
+All SPs: GRANT EXECUTE ON [SP_Name] TO alappuser
+
+================================================================
+## NOTES
+================================================================
+- Cedula format in DB: XXX-XXXXXXX-X (with hyphens)
+- LastFour validation: RIGHT(REPLACE(Cedula,'-',''), 4)
+- Employee code format: DR + 4 digits zero-padded (DR0002)
+- Photo sync: \\ADRDB1\Fotos Empleados\{Numero}.jpg → OneDrive\EmployeePics\{Codigo}.jpg
+- Photo naming: file number (2, 20, 200) → DR code (DR0002, DR0020, DR0200)
